@@ -1,4 +1,3 @@
-/// API configuration constants and endpoints.
 abstract class ApiEndpoints {
   // Base URLs (Customize per environment e.g. dev, staging, prod)
   static const String baseUrl = 'https://fakestoreapi.com';
