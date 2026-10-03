@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shougot_flutter/core/widgets/app_button.dart';
 import 'package:shougot_flutter/core/widgets/auth_text_form_field.dart'
     show AuthTextFormField, AuthTextFieldType;
 import 'package:shougot_flutter/feature/auth/data/model/auth_models.dart';
 import 'package:shougot_flutter/feature/auth/provider/auth_provider.dart';
+import 'package:shougot_flutter/feature/auth/view/login_view.dart';
 
 class SignupView extends ConsumerStatefulWidget {
   const SignupView({super.key});
@@ -69,7 +69,10 @@ class _SignupViewState extends ConsumerState<SignupView> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Welcome, ${response.user!.name ?? 'User'}')),
           );
-          context.go('/home');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginView()),
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(response.message ?? 'Signup failed')),
@@ -226,56 +229,6 @@ class _SignupViewState extends ConsumerState<SignupView> {
                   isFullWidth: true,
                   onPressed: _handleSignup,
                 ),
-                const SizedBox(height: 24),
-
-                // Divider
-                Row(
-                  children: [
-                    Expanded(child: Divider(color: theme.colorScheme.outline)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'OR',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                        ),
-                      ),
-                    ),
-                    Expanded(child: Divider(color: theme.colorScheme.outline)),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // Social Signup Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: AppButton(
-                        label: 'Google',
-                        type: AppButtonType.outlined,
-                        size: AppButtonSize.medium,
-                        leadingIcon: Icons.g_mobiledata,
-                        isFullWidth: true,
-                        onPressed: () {
-                          // TODO: Implement Google Sign Up
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AppButton(
-                        label: 'Apple',
-                        type: AppButtonType.outlined,
-                        size: AppButtonSize.medium,
-                        leadingIcon: Icons.apple,
-                        isFullWidth: true,
-                        onPressed: () {
-                          // TODO: Implement Apple Sign Up
-                        },
-                      ),
-                    ),
-                  ],
-                ),
                 const SizedBox(height: 32),
 
                 // Login Link
@@ -289,7 +242,12 @@ class _SignupViewState extends ConsumerState<SignupView> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => context.go('/auth/login'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const LoginView()),
+                        );
+                      },
                       child: Text(
                         'Sign In',
                         style: theme.textTheme.bodyMedium?.copyWith(

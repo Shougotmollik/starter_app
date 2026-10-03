@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shougot_flutter/core/widgets/app_button.dart';
 import 'package:shougot_flutter/core/widgets/auth_text_form_field.dart'
     show AuthTextFormField, AuthTextFieldType;
 import 'package:shougot_flutter/feature/auth/data/model/auth_models.dart';
 import 'package:shougot_flutter/feature/auth/provider/auth_provider.dart';
+import 'package:shougot_flutter/feature/auth/view/login_view.dart';
 
 class ResetPasswordView extends ConsumerStatefulWidget {
   final String token;
@@ -169,7 +169,12 @@ class _ResetPasswordViewState extends ConsumerState<ResetPasswordView> {
                     type: AppButtonType.filled,
                     size: AppButtonSize.large,
                     isFullWidth: true,
-                    onPressed: () => context.go('/auth/login'),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginView()),
+                      );
+                    },
                   ),
                 ],
               ],

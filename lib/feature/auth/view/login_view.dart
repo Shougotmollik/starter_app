@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:shougot_flutter/core/widgets/app_button.dart';
 import 'package:shougot_flutter/core/widgets/auth_text_form_field.dart';
 import 'package:shougot_flutter/feature/auth/data/model/auth_models.dart';
 import 'package:shougot_flutter/feature/auth/provider/auth_provider.dart';
+import 'package:shougot_flutter/feature/auth/view/forgot_password_view.dart';
+import 'package:shougot_flutter/feature/auth/view/signup_view.dart';
+import 'package:shougot_flutter/feature/product/view/product_view.dart';
 
 class LoginView extends ConsumerStatefulWidget {
   const LoginView({super.key});
@@ -46,7 +48,10 @@ class _LoginViewState extends ConsumerState<LoginView> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Welcome back, ${response.user!.name ?? 'User'}')),
           );
-          context.go('/home');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const ProductView()),
+          );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(response.message ?? 'Login failed')),
@@ -146,7 +151,12 @@ class _LoginViewState extends ConsumerState<LoginView> {
                       ],
                     ),
                     TextButton(
-                      onPressed: () => context.push('/auth/forgot-password'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const ForgotPasswordView()),
+                        );
+                      },
                       child: Text(
                         'Forgot Password?',
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -168,56 +178,6 @@ class _LoginViewState extends ConsumerState<LoginView> {
                   isFullWidth: true,
                   onPressed: _handleLogin,
                 ),
-                const SizedBox(height: 24),
-
-                // Divider
-                Row(
-                  children: [
-                    Expanded(child: Divider(color: theme.colorScheme.outline)),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        'OR',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                        ),
-                      ),
-                    ),
-                    Expanded(child: Divider(color: theme.colorScheme.outline)),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                // Social Login Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: AppButton(
-                        label: 'Google',
-                        type: AppButtonType.outlined,
-                        size: AppButtonSize.medium,
-                        leadingIcon: Icons.g_mobiledata,
-                        isFullWidth: true,
-                        onPressed: () {
-                          // TODO: Implement Google Sign In
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: AppButton(
-                        label: 'Apple',
-                        type: AppButtonType.outlined,
-                        size: AppButtonSize.medium,
-                        leadingIcon: Icons.apple,
-                        isFullWidth: true,
-                        onPressed: () {
-                          // TODO: Implement Apple Sign In
-                        },
-                      ),
-                    ),
-                  ],
-                ),
                 const SizedBox(height: 32),
 
                 // Sign Up Link
@@ -231,7 +191,12 @@ class _LoginViewState extends ConsumerState<LoginView> {
                       ),
                     ),
                     TextButton(
-                      onPressed: () => context.push('/auth/signup'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (_) => const SignupView()),
+                        );
+                      },
                       child: Text(
                         'Sign Up',
                         style: theme.textTheme.bodyMedium?.copyWith(
