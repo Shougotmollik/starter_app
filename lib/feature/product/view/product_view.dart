@@ -1,5 +1,5 @@
-import 'package:api_learning/feature/product/data/model/product.dart';
-import 'package:api_learning/feature/product/provider/product_provider.dart';
+import 'package:shougot_flutter/feature/product/data/model/product.dart';
+import 'package:shougot_flutter/feature/product/provider/product_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

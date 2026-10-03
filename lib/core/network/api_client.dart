@@ -1,9 +1,9 @@
-import 'package:api_learning/core/network/api_endpoint.dart';
-import 'package:api_learning/core/network/api_interceptor.dart';
-import 'package:api_learning/core/network/api_response.dart';
-import 'package:api_learning/core/network/network_exceptions.dart';
-import 'package:api_learning/utils/app_snackbar.dart';
-import 'package:api_learning/utils/internet_checker.dart';
+import 'package:shougot_flutter/core/network/api_endpoint.dart';
+import 'package:shougot_flutter/core/network/api_interceptor.dart';
+import 'package:shougot_flutter/core/network/api_response.dart';
+import 'package:shougot_flutter/core/network/network_exceptions.dart';
+import 'package:shougot_flutter/utils/app_snackbar.dart';
+import 'package:shougot_flutter/utils/internet_checker.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';

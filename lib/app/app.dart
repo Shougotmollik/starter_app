@@ -1,5 +1,5 @@
-import 'package:api_learning/core/theme/theme.dart';
-import 'package:api_learning/feature/product/view/product_view.dart';
+import 'package:shougot_flutter/core/theme/theme.dart';
+import 'package:shougot_flutter/feature/product/view/product_view.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatelessWidget {
@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: ProductView(),
-      title: "Api Learning",
+      title: "Shougot Flutter",
       theme: AppTheme.theme,
     );
   }

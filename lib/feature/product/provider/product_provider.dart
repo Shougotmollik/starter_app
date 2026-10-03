@@ -1,6 +1,6 @@
- import 'package:api_learning/core/network/api_client.dart';
-import 'package:api_learning/feature/product/data/model/product.dart';
-import 'package:api_learning/feature/product/data/repository/product_repository.dart';
+ import 'package:shougot_flutter/core/network/api_client.dart';
+import 'package:shougot_flutter/feature/product/data/model/product.dart';
+import 'package:shougot_flutter/feature/product/data/repository/product_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'product_provider.g.dart';

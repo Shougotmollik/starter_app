@@ -1,4 +1,4 @@
-import 'package:api_learning/core/constants/app_colors.dart';
+import 'package:shougot_flutter/core/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

@@ -1,5 +1,5 @@
-import 'package:api_learning/core/network/api_endpoint.dart';
-import 'package:api_learning/core/network/token_manager.dart';
+import 'package:shougot_flutter/core/network/api_endpoint.dart';
+import 'package:shougot_flutter/core/network/token_manager.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 

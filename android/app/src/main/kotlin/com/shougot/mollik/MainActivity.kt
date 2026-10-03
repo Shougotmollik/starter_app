@@ -1,4 +1,4 @@
-package com.example.api_learning
+package com.shougot.mollik
 
 import io.flutter.embedding.android.FlutterActivity
 
