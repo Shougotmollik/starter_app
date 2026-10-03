@@ -41,6 +41,7 @@ dependencies:
   connectivity_plus: ^7.3.2
   flutter_riverpod: ^3.0.3
   riverpod_annotation: ^3.0.0
+  go_router: ^14.0.0
 
 dev_dependencies:
   flutter_test:

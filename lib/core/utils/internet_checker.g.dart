@@ -11,7 +11,7 @@ part of 'internet_checker.dart';
 /// Reactive, battery-friendly Riverpod stream listening to OS network changes.
 
 @ProviderFor(internetStatus)
-final internetStatusProvider = InternetStatusProvider._();
+const internetStatusProvider = InternetStatusProvider._();
 
 /// Reactive, battery-friendly Riverpod stream listening to OS network changes.
 
@@ -19,7 +19,7 @@ final class InternetStatusProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, Stream<bool>>
     with $FutureModifier<bool>, $StreamProvider<bool> {
   /// Reactive, battery-friendly Riverpod stream listening to OS network changes.
-  InternetStatusProvider._()
+  const InternetStatusProvider._()
     : super(
         from: null,
         argument: null,

@@ -603,9 +603,311 @@ flutter test
 
 ---
 
+## 🔐 Auth API Integration Guide
+
+This section covers the complete authentication flow implementation using the established patterns.
+
+---
+
+### Auth Feature Structure
+
+```
+lib/feature/auth/
+├── data/
+│   ├── model/
+│   │   └── auth_models.dart       # User, AuthResponse, LoginRequest, SignupRequest, etc.
+│   └── repository/
+│       └── auth_repository.dart   # Auth API calls
+├── provider/
+│   └── auth_provider.dart         # Riverpod providers + AuthController
+└── view/
+    ├── login_view.dart
+    ├── signup_view.dart
+    ├── forgot_password_view.dart
+    └── reset_password_view.dart
+```
+
+---
+
+### 1. Auth Models (`auth_models.dart`)
+
+```dart
+// User model with token management
+class User {
+  final int? id;
+  final String? name;
+  final String? email;
+  final String? avatar;
+  final String? token;
+  final String? refreshToken;
+  final DateTime? tokenExpiry;
+
+  bool get isAuthenticated => token != null && token!.isNotEmpty;
+}
+
+// Standard auth response wrapper
+class AuthResponse {
+  final bool success;
+  final String? message;
+  final User? user;
+  final String? accessToken;
+  final String? refreshToken;
+}
+
+// Request models
+class LoginRequest { final String email; final String password; final bool rememberMe; }
+class SignupRequest { final String name; final String email; final String password; final String confirmPassword; }
+class ForgotPasswordRequest { final String email; }
+class ResetPasswordRequest { final String email; final String password; final String confirmPassword; final String token; }
+class ChangePasswordRequest { final String currentPassword; final String newPassword; final String confirmPassword; }
+```
+
+---
+
+### 2. Auth Repository (`auth_repository.dart`)
+
+All auth endpoints with proper error handling:
+
+```dart
+class AuthRepository {
+  AuthRepository(this._apiClient);
+  final ApiClient _apiClient;
+
+  Future<AuthResponse> login(LoginRequest request) async { ... }
+  Future<AuthResponse> signup(SignupRequest request) async { ... }
+  Future<void> logout() async { ... }
+  Future<AuthResponse> refreshToken(String refreshToken) async { ... }
+  Future<User> getProfile() async { ... }
+  Future<User> updateProfile({required String name, String? avatar}) async { ... }
+  Future<void> forgotPassword(ForgotPasswordRequest request) async { ... }
+  Future<void> resetPassword(ResetPasswordRequest request) async { ... }
+  Future<void> changePassword(ChangePasswordRequest request) async { ... }
+  Future<User> uploadAvatar(String filePath) async { ... }
+  Future<void> deleteAccount() async { ... }
+}
+```
+
+**Key patterns:**
+- `needAuth: false` for login/signup/forgot-password
+- `needAuth: true` for protected endpoints
+- `showFloatingError: true` for user-facing errors
+- `responseParser` to convert JSON to models
+
+---
+
+### 3. Auth Provider (`auth_provider.dart`)
+
+Using `AsyncNotifier` for mutable auth state:
+
+```dart
+@riverpod
+class AuthController extends _$AuthController {
+  @override
+  Future<User?> build() async => null;
+
+  Future<AuthResponse> login(LoginRequest request) async {
+    state = const AsyncLoading();
+    try {
+      final response = await ref.read(authRepositoryProvider).login(request);
+      if (response.user != null && response.accessToken != null) {
+        final user = response.user!.copyWith(
+          token: response.accessToken,
+          refreshToken: response.refreshToken,
+        );
+        state = AsyncData(user);
+      }
+      return response;
+    } catch (e, stack) {
+      state = AsyncError(e, stack);
+      rethrow;
+    }
+  }
+
+  Future<AuthResponse> signup(SignupRequest request) async { ... }
+  Future<void> logout() async { ... }
+  Future<User> refreshUser() async { ... }
+  Future<User> updateProfile({required String name, String? avatar}) async { ... }
+  // ... other mutations
+}
+
+@riverpod
+Future<User?> currentUser(Ref ref) async {
+  final authState = ref.watch(authControllerProvider);
+  return authState.when(data: (user) => user, loading: () => null, error: (_, __) => null);
+}
+
+@riverpod
+bool isAuthenticated(Ref ref) {
+  final user = ref.watch(currentUserProvider);
+  return user.asData?.value?.isAuthenticated ?? false;
+}
+```
+
+---
+
+### 4. Auth Views
+
+#### Login View (`login_view.dart`)
+- Email/password fields with validation
+- Remember me checkbox
+- Forgot password link
+- Social login buttons (Google, Apple)
+- Navigation to signup
+
+#### Signup View (`signup_view.dart`)
+- Name, email, password, confirm password
+- Password strength validation
+- Terms & conditions checkbox
+- Social signup buttons
+- Navigation to login
+
+#### Forgot Password (`forgot_password_view.dart`)
+- Email input
+- Success state with resend option
+- Back to login link
+
+#### Reset Password (`reset_password_view.dart`)
+- Token from URL parameter
+- New password + confirmation
+- Success state with navigation to login
+
+---
+
+### 5. Router Configuration
+
+```dart
+// lib/app/router.dart
+import 'package:go_router/go_router.dart';
+import 'package:shougot_flutter/feature/auth/view/login_view.dart';
+import 'package:shougot_flutter/feature/auth/view/signup_view.dart';
+import 'package:shougot_flutter/feature/auth/view/forgot_password_view.dart';
+import 'package:shougot_flutter/feature/auth/view/reset_password_view.dart';
+
+final router = GoRouter(
+  initialLocation: '/auth/login',
+  routes: [
+    GoRoute(
+      path: '/auth/login',
+      builder: (context, state) => const LoginView(),
+    ),
+    GoRoute(
+      path: '/auth/signup',
+      builder: (context, state) => const SignupView(),
+    ),
+    GoRoute(
+      path: '/auth/forgot-password',
+      builder: (context, state) => const ForgotPasswordView(),
+    ),
+    GoRoute(
+      path: '/auth/reset-password',
+      builder: (context, state) => ResetPasswordView(
+        token: state.uri.queryParameters['token'] ?? '',
+      ),
+    ),
+    // Protected routes
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => const HomeView(),
+      redirect: (context, state) {
+        final auth = ref.read(isAuthenticatedProvider);
+        if (!auth) return '/auth/login';
+        return null;
+      },
+    ),
+  ],
+);
+```
+
+---
+
+### 6. Token Management (Auto-refresh)
+
+The `ApiClient` handles token refresh automatically via `AuthInterceptor`:
+
+```dart
+// lib/core/network/api_interceptor.dart
+class AuthInterceptor extends Interceptor {
+  final Dio dio;
+  AuthInterceptor({required this.dio});
+
+  @override
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
+    final token = ref.read(authControllerProvider).value?.token;
+    if (token != null && options.extra['needAuth'] == true) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
+    handler.next(options);
+  }
+
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    if (err.response?.statusCode == 401 && err.requestOptions.extra['needAuth'] == true) {
+      // Attempt token refresh
+      final refreshToken = ref.read(authControllerProvider).value?.refreshToken;
+      if (refreshToken != null) {
+        try {
+          final response = await _refreshToken(refreshToken);
+          // Retry original request with new token
+          return handler.resolve(await _retryRequest(err.requestOptions, response.accessToken!));
+        } catch (_) {
+          // Refresh failed, logout user
+          ref.read(authControllerProvider.notifier).clearAuth();
+        }
+      }
+    }
+    handler.next(err);
+  }
+}
+```
+
+---
+
+### 7. Usage in UI
+
+```dart
+// Check auth state
+final isAuth = ref.watch(isAuthenticatedProvider);
+final user = ref.watch(currentUserProvider);
+
+// Login
+await ref.read(authControllerProvider.notifier).login(
+  LoginRequest(email: 'user@example.com', password: 'password123'),
+);
+
+// Signup
+await ref.read(authControllerProvider.notifier).signup(
+  SignupRequest(name: 'John', email: 'john@example.com', password: 'password123', confirmPassword: 'password123'),
+);
+
+// Logout
+await ref.read(authControllerProvider.notifier).logout();
+
+// Protected API calls (automatically adds Bearer token)
+final profile = await ref.read(authControllerProvider.notifier).refreshUser();
+```
+
+---
+
+### 8. Protected Route Guard
+
+```dart
+// In router redirect
+redirect: (context, state) {
+  final auth = ref.read(isAuthenticatedProvider);
+  final isAuthRoute = state.matchedLocation.startsWith('/auth/');
+  
+  if (!auth && !isAuthRoute) return '/auth/login';
+  if (auth && isAuthRoute) return '/home';
+  return null;
+},
+```
+
+---
+
 ## 🔗 Related Files
 
 - `lib/core/network/api_client.dart` - Full HTTP client implementation
 - `lib/core/network/api_response.dart` - Response wrapper
 - `lib/feature/product/` - Complete working example
+- `lib/feature/auth/` - Complete auth implementation
 - `lib/app/app_bootstrap.dart` - App initialization

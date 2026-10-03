@@ -10,7 +10,7 @@ part of 'product_provider.dart';
 // ignore_for_file: type=lint, type=warning
 
 @ProviderFor(productRepository)
-final productRepositoryProvider = ProductRepositoryProvider._();
+const productRepositoryProvider = ProductRepositoryProvider._();
 
 final class ProductRepositoryProvider
     extends
@@ -20,7 +20,7 @@ final class ProductRepositoryProvider
           ProductRepository
         >
     with $Provider<ProductRepository> {
-  ProductRepositoryProvider._()
+  const ProductRepositoryProvider._()
     : super(
         from: null,
         argument: null,
@@ -57,7 +57,7 @@ final class ProductRepositoryProvider
 String _$productRepositoryHash() => r'62f1d6882bf711b7900d0bdd2d79dd910099e28b';
 
 @ProviderFor(products)
-final productsProvider = ProductsProvider._();
+const productsProvider = ProductsProvider._();
 
 final class ProductsProvider
     extends
@@ -67,7 +67,7 @@ final class ProductsProvider
           FutureOr<List<Product>>
         >
     with $FutureModifier<List<Product>>, $FutureProvider<List<Product>> {
-  ProductsProvider._()
+  const ProductsProvider._()
     : super(
         from: null,
         argument: null,
@@ -96,12 +96,12 @@ final class ProductsProvider
 String _$productsHash() => r'b77f525fd11e508922345f308e01f76f04f0eba7';
 
 @ProviderFor(singleProduct)
-final singleProductProvider = SingleProductFamily._();
+const singleProductProvider = SingleProductFamily._();
 
 final class SingleProductProvider
     extends $FunctionalProvider<AsyncValue<Product>, Product, FutureOr<Product>>
     with $FutureModifier<Product>, $FutureProvider<Product> {
-  SingleProductProvider._({
+  const SingleProductProvider._({
     required SingleProductFamily super.from,
     required int super.argument,
   }) : super(
@@ -148,7 +148,7 @@ String _$singleProductHash() => r'e0272a50a8f23aaa82dc3a7c63f4a779c5aa9cb6';
 
 final class SingleProductFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<Product>, int> {
-  SingleProductFamily._()
+  const SingleProductFamily._()
     : super(
         retry: null,
         name: r'singleProductProvider',
@@ -165,12 +165,12 @@ final class SingleProductFamily extends $Family
 }
 
 @ProviderFor(createProduct)
-final createProductProvider = CreateProductFamily._();
+const createProductProvider = CreateProductFamily._();
 
 final class CreateProductProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
     with $FutureModifier<bool>, $FutureProvider<bool> {
-  CreateProductProvider._({
+  const CreateProductProvider._({
     required CreateProductFamily super.from,
     required Product super.argument,
   }) : super(
@@ -217,7 +217,7 @@ String _$createProductHash() => r'377d777f216d647ce0cbe765840702af22359798';
 
 final class CreateProductFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<bool>, Product> {
-  CreateProductFamily._()
+  const CreateProductFamily._()
     : super(
         retry: null,
         name: r'createProductProvider',
@@ -234,12 +234,12 @@ final class CreateProductFamily extends $Family
 }
 
 @ProviderFor(updateProduct)
-final updateProductProvider = UpdateProductFamily._();
+const updateProductProvider = UpdateProductFamily._();
 
 final class UpdateProductProvider
     extends $FunctionalProvider<AsyncValue<bool>, bool, FutureOr<bool>>
     with $FutureModifier<bool>, $FutureProvider<bool> {
-  UpdateProductProvider._({
+  const UpdateProductProvider._({
     required UpdateProductFamily super.from,
     required ({int id, Product product}) super.argument,
   }) : super(
@@ -287,7 +287,7 @@ String _$updateProductHash() => r'1e7a3eb0175bee3d54c703fcf7e64e31e9a35984';
 final class UpdateProductFamily extends $Family
     with
         $FunctionalFamilyOverride<FutureOr<bool>, ({int id, Product product})> {
-  UpdateProductFamily._()
+  const UpdateProductFamily._()
     : super(
         retry: null,
         name: r'updateProductProvider',
